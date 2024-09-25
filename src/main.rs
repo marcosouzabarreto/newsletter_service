@@ -1,23 +1,13 @@
-use actix_web::{web, App, HttpRequest, HttpResponse, HttpServer, Responder};
-
-async fn greet(req: HttpRequest) -> impl Responder {
-    let greet_name = req.match_info().get("name").unwrap_or("world");
-    format!("Hello {}!", greet_name)
-}
-
-async fn health_check(_req: HttpRequest) -> impl Responder {
-    HttpResponse::Ok()
-}
+mod routes;
+mod startup;
+use newsletter_service::configuration::get_configuration;
+use startup::run;
+use std::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    HttpServer::new(|| {
-        App::new()
-            .route("/", web::get().to(greet))
-            .route("/name", web::get().to(greet))
-            .route("/health_check", web::get().to(health_check))
-    })
-    .bind("0.0.0.0:8000")?
-    .run()
-    .await
+    let configuration = get_configuration().expect("Failed to get configuration");
+    let address = format!("0.0.0.0:{}", configuration.application_port);
+    let listener = TcpListener::bind(address).expect("Error to bind random port");
+    run(listener)?.await
 }
