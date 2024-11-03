@@ -12,7 +12,7 @@ fi
 
 # Check if a custom parameter has been set, otherwise use default values
 DB_PORT="${DB_PORT:=5432}"
-SUPERUSER="${SUPERUSER:=postgres}"
+SUPERUSER="${SUPERUSER:=root}"
 SUPERUSER_PWD="${SUPERUSER_PWD:=password}"
 APP_USER="${APP_USER:=app}"
 APP_USER_PWD="${APP_USER_PWD:=secret}"
