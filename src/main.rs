@@ -4,17 +4,18 @@ use newsletter_service::{
     configuration::get_configuration,
     telemetry::{get_subscriber, init_subscriber},
 };
+use secrecy::ExposeSecret;
 use sqlx::PgPool;
 use startup::run;
 use std::net::TcpListener;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let subscriber = get_subscriber("newsletter_service".to_string(), "info".to_string());
+    let subscriber = get_subscriber("newsletter_service".to_string(), "info".to_string(), std::io::stdout);
     init_subscriber(subscriber);
 
     let configuration = get_configuration().expect("Failed to get configuration");
-    let connection_pool = PgPool::connect(&configuration.database.connection_string())
+    let connection_pool = PgPool::connect(&configuration.database.connection_string().expose_secret())
         .await
         .expect("Failed to read configuration");
 
